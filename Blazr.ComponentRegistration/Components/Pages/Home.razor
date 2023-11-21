@@ -1,0 +1,27 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="mb-3">
+    <BlazrSelect @bind-Value="_country">
+        <BlazrOption Id="UK" Value="UK"/>
+        <BlazrOption Id="France" Value="France" />
+        <BlazrOption Id="Spain" Value="Spain" />
+        <BlazrOption Id="Portugal" Value="Portugal" />
+    </BlazrSelect>
+</div>
+
+<div class="mb-3">
+    <OptionSelect @bind-Value="_country">
+        <Option Id="UK" Value="UK" />
+        <Option Id="France" Value="France" />
+        <Option Id="Spain" Value="Spain" />
+        <Option Id="Portugal" Value="Portugal" />
+    </OptionSelect>
+</div>
+
+<div class="alert alert-primary">Country: @_country</div>
+
+@code {
+    private string? _country;
+}

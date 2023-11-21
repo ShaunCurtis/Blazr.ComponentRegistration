@@ -1,0 +1,41 @@
+﻿@namespace Blazr.ComponentRegistration.Components
+
+<CascadingValue Value="Register" IsFixed>
+    @ChildContent
+</CascadingValue>
+
+<Defer>
+    <select class="form-select"
+            @bind:get="@this.Value"
+            @bind:set="this.SetValue">
+
+        @if (this.Value is null)
+        {
+            <option selected disabled value=""> -- Select An Item -- </option>
+        }
+
+        @foreach (var item in _items)
+        {
+            @item
+        }
+    </select>
+
+</Defer>
+
+@code {
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private List<RenderFragment> _items = new();
+
+    private void Register(RenderFragment option)
+    {
+        if (!_items.Contains(option))
+            _items.Add(option);
+    }
+
+    private async Task SetValue(string? value)
+        => await this.ValueChanged.InvokeAsync(value);
+}

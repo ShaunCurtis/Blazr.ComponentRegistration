@@ -1,0 +1,38 @@
+﻿@namespace Blazr.ComponentRegistration.Components
+@using Microsoft.AspNetCore.Components.Rendering
+
+@code {
+    private bool _hasRegistered;
+
+    [Parameter, EditorRequired] public string? Id { get; set; }
+    [Parameter, EditorRequired] public string? Value { get; set; }
+    [CascadingParameter] private Action<RenderFragment>? Register { get; set; }
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        // We only need to register once.
+        // We can ignore all subsequent parameter changes, short circuit the lifecycle processes
+        // and return a completed task.
+        if (!_hasRegistered)
+        {
+            parameters.SetParameterProperties(this);
+
+            // Check we have everything.  If not throw an exception.
+            ArgumentNullException.ThrowIfNull(this.Id);
+            ArgumentNullException.ThrowIfNull(this.Value);
+            ArgumentNullException.ThrowIfNull(this.Register);
+
+            // Register our render fragment
+            this.Register.Invoke(OptionBuilder);
+            _hasRegistered = true;
+        }
+        // Short circuit the life cycle process.  We waste processor time doing it for no purpose.
+        return Task.CompletedTask;
+    }
+
+    //Create the render fragment that is the rendered content
+    private void OptionBuilder(RenderTreeBuilder __builder)
+    {
+        <option value="@this.Id">@this.Value</option>
+    }
+}
