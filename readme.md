@@ -1,6 +1,6 @@
 # The Blazor Component Registration Pattern
 
-This Repo demonstrates the basics of how to use the *Blazor Component Registration* pattern.
+This Repo demonstrates the basics of the *Blazor Component Registration* pattern.
 
 Registration is the process by which a child component registers itself with a parent component.  The actual content is built out by the parent based on data provided by the child.
 
@@ -30,9 +30,9 @@ It looks like:
 }
 ```
 
-It's purpose is to defer rendering of the actual content until after the `Option` components have registered.  It's at the same level in the Render Tree as the `Option` components, so renders in sequence with them.  As it's last, it renders it content - provided as a `RenderFragment` from the parent - last.
+It's purpose is to defer rendering of the actual content until after the `Option` components have registered.  `Defer` is at the same level in the Render Tree as the `Option` components, so renders in sequence with them.  As it's placed last, it renders it content - provided as a `RenderFragment` from the parent - last.
 
-## The RenderFragment Approach
+## Using RenderFragments
 
 Our definition looks like this:
 
@@ -52,7 +52,7 @@ Our definition looks like this:
 1. Everything happens in `SetParametersAsync` before any rendering takes place.
 1. The code within `SetParametersAsync` only runs once when `_hasRegistered` is `false`.
 1. Exceptions are raised if there's any missing data.
-1. The component registers the `OptionBuilder` as the RenderFragment when it calls Register. 
+1. The component registers the `OptionBuilder` method as the RenderFragment when it calls Register. 
 1. `SetParametersAsync` returns a completed Task.  It short circuits the lifecycle process: It does nothing so there's no point in running it.
 
 
@@ -169,19 +169,19 @@ Our definition looks like this:
 }
 ```
 
-## The Context Approach
+## Using a Context.
 
-In more complex situations we can further decouple the parent and child using a data object for the data transfer and a context class to manage registration and collection management. 
+In more complex situations we can use a data object for the data transfer and a context class to manage registration and collection management. 
 
 ## The BlazrOptionContext
 
-A simple `record` or ` `readonly struct` value object to hold the option data.
+A simple `record` or `readonly struct` value object to hold the option data.
 
 ```csharp
 public record OptionData(string Id, string Value);
 ```
 
-The context, which in this case just provides the registration process method and exposes a public readonly collection of `OptionData` object.  It encapsulates only the functionality we need.
+The context, which in this case just provides the registration process method and exposes a public readonly collection of `OptionData` object.  It provides the functionality we need.
 
 ```csharp
 public class OptionContext
@@ -200,7 +200,7 @@ public class OptionContext
 
 ## BlazrOption Component
 
-The sole purpose of the component is to register its configurstion data.  Nothing else.  There's no content to output to the DOM.
+The sole purpose of the component is to register its configuration data.  Nothing else.  There's no content to output to the DOM.
 
 1. Everything happens in `SetParametersAsync`.
 1. The code within `SetParametersAsync` only runs once when `_hasRegistered` is `false`.
@@ -249,7 +249,7 @@ public class BlazrOption : ComponentBase
 
 ## BlazrSelect Component
 
-The main component creates an instance of the `OptionContext` and cascades it to the `ChildContent` - the `BlazorOption` components.  It only does this on the first render as these don't need to be render again - their only purpose is to register their data.
+The main component creates an instance of the `OptionContext` and cascades it to the `ChildContent` - the `BlazorOption` components.  It only does this on the first render.  Their only purpose is to register their data.
 
 The `Defer` component is used as before to defer rendering of the main component content.  This time the component builds the `option` code directly.
 
